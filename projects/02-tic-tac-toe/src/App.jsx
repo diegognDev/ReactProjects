@@ -1,13 +1,21 @@
 import { useState } from 'react'
 import './App.css'
 import Square from './components/Square'
-import { TURNS, WINNER_COMBOS } from './constants'
+import { TURNS } from './constants'
 import { checkEndGame, checkWinner } from './logic/board'
 import { WinnerModal } from './components/WinnerModal'
 
 function App() {
-  const [board, setBoard] = useState(Array(9).fill(null))
-  const [turn, setTurn] = useState(TURNS.X)
+  const [board, setBoard] = useState(() => {
+    const boardFromLocalStorga = window.localStorage.getItem('board')
+    return boardFromLocalStorga
+      ? JSON.parse(boardFromLocalStorga)
+      : Array(9).fill(null)
+  })
+  const [turn, setTurn] = useState(() => {
+    const turnFromLocalStorage = window.localStorage.getItem('turn')
+    return turnFromLocalStorage ?? TURNS.X
+  })
   const [winner, setWinner] = useState(null)
 
   const updateBoard = (index) => {
@@ -17,6 +25,10 @@ function App() {
     setBoard(newBoard)
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
     setTurn(newTurn)
+
+    //save game using local storage
+    window.localStorage.setItem('board', JSON.stringify(newBoard))
+    window.localStorage.setItem('turn', newTurn)
 
     const newWinner = checkWinner(newBoard)
     if (newWinner) {
@@ -30,6 +42,8 @@ function App() {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
+    window.localStorage.removeItem('board')
+    window.localStorage.removeItem('turn')
   }
   return (
     <main className="board">
