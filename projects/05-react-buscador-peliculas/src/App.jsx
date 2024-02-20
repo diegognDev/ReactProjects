@@ -1,13 +1,15 @@
 import './App.css'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Movies } from './components/Movies.jsx'
 import { useMovies } from './hooks/useMovies.js'
 import { useSearch } from './hooks/useSearch.js'
+import Spinner from './components/Spinner.jsx'
 
 function App() {
-  const { movies } = useMovies()
   const inputRef = useRef()
+  const [sort, setSort] = useState(false)
   const { search, setSearch, error } = useSearch()
+  const { movies, getMovies, loading } = useMovies({ search, sort })
 
   // const handleSubmit = (event) => {
   //   event.preventDefault()
@@ -25,11 +27,15 @@ function App() {
   //Forma controlada. Se ve en cada momento que se introduce en el formulario
   const handleSubmit = (evt) => {
     evt.preventDefault()
-    console.log({ search })
+    getMovies({ search })
   }
 
   const handleChange = (event) => {
     setSearch(event.target.value)
+  }
+
+  const handleSort = () => {
+    setSort(!sort)
   }
 
   return (
@@ -45,15 +51,14 @@ function App() {
             id="searchBar"
             placeholder="Avengers, Star Wars..."
           />
+          <input type="checkbox" onChange={handleSort} />
           <button id="searchButton" type="submit">
             Buscar
           </button>
         </form>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </header>
-      <main>
-        <Movies movies={movies} />
-      </main>
+      <main>{loading ? <Spinner /> : <Movies movies={movies} />}</main>
     </div>
   )
 }

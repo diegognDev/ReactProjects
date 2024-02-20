@@ -1,7 +1,7 @@
 /* eslint-disable */
 function ListOfMovies({ movies }) {
   return (
-    <ul>
+    <ul className="movies">
       {movies.map((movie) => {
         return (
           <li className="movie" key={movie.id}>
