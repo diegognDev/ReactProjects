@@ -1,8 +1,9 @@
 import './App.css'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Movies } from './components/Movies.jsx'
 import { useMovies } from './hooks/useMovies.js'
 import { useSearch } from './hooks/useSearch.js'
+import debounce from 'just-debounce-it'
 import Spinner from './components/Spinner.jsx'
 
 function App() {
@@ -24,6 +25,14 @@ function App() {
   //   console.log(query)
   // }
 
+  const debouncedGetMovies = useCallback(
+    debounce((search) => {
+      getMovies({ search })
+    }, 300),
+
+    []
+  )
+
   //Forma controlada. Se ve en cada momento que se introduce en el formulario
   const handleSubmit = (evt) => {
     evt.preventDefault()
@@ -31,7 +40,9 @@ function App() {
   }
 
   const handleChange = (event) => {
-    setSearch(event.target.value)
+    const newSearch = event.target.value
+    setSearch(newSearch)
+    debouncedGetMovies(newSearch)
   }
 
   const handleSort = () => {
