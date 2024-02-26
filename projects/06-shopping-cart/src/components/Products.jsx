@@ -1,11 +1,15 @@
+import { useCart } from '../hooks/useCart'
+import { AddToCartIcon, RemoveFromCartIcon } from './Icons'
 import './Products.css'
-import { AddToCartIcon } from './Icons'
 
 export function Products({ products }) {
+  const { context, checkProductInCart } = useCart()
+  const { addToCart, removeFromCart } = context
   return (
     <main className="products">
       <ul>
-        {products.map((product) => {
+        {products.slice(0, 10).map((product) => {
+          const isProductInCart = checkProductInCart(product)
           return (
             <li key={product.id}>
               <img src={product.thumbnail} alt={product.title} />
@@ -14,8 +18,14 @@ export function Products({ products }) {
               </div>
               <p>Price: ${product.price}</p>
               <div>
-                <button>
-                  <AddToCartIcon />
+                <button
+                  onClick={() =>
+                    isProductInCart
+                      ? removeFromCart(product)
+                      : addToCart(product)
+                  }
+                >
+                  {isProductInCart ? <RemoveFromCartIcon /> : <AddToCartIcon />}
                 </button>
               </div>
             </li>
